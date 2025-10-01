@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trung Thu Yêu Thương</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top, #ffd1dc, #ff9aa2);
+      overflow: hidden;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    /* Mặt trăng */
+    #moon {
+      position: absolute;
+      top: 10%;
+      right: 10%;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, #fffacd 0%, #ffd700 70%);
+      border-radius: 50%;
+      box-shadow: 0 0 50px rgba(255,255,200,0.8);
+      z-index: 0;
+    }
+
+    /* Ngôi sao lung linh */
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff9a6;
+      opacity: 0.9;
+      animation: twinkle 1.5s infinite alternate;
+      z-index: 0;
+    }
+    @keyframes twinkle {0%{opacity:0.4;}50%{opacity:1;}100%{opacity:0.4;}}
+
+    /* Nút bấm */
+    #playBtn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      padding: 20px 40px;
+      font-size: 22px;
+      background: #ff4d6d;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      animation: pulse 1.5s infinite;
+    }
+    #playBtn:hover {background: #ff3355;}
+    @keyframes pulse {0%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.1);}100%{transform:translate(-50%,-50%) scale(1);}}
+
+    /* Hình ảnh bay */
+    .floating-img {
+      position: absolute;
+      z-index: 1;
+      animation: floatUp 20s linear forwards;
+    }
+    @keyframes floatUp {0%{transform:translateY(100vh);opacity:0;}10%{opacity:1;}100%{transform:translateY(-150vh);opacity:0;}}
+
+    /* Trái tim */
+    .heart {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: red;
+      transform: rotate(-45deg);
+      animation: floatHeart linear forwards;
+      z-index: 1;
+    }
+    .heart::before,
+    .heart::after {content:""; position:absolute; width:25px; height:25px; border-radius:50%; background:red;}
+    .heart::before {top:-12.5px; left:0;}
+    .heart::after {left:12.5px; top:0;}
+    @keyframes floatHeart {0%{transform:translateY(0) rotate(-45deg) scale(0.5);opacity:0;}30%{opacity:1;}100%{transform:translateY(-400px) rotate(-45deg) scale(1);opacity:0;}}
+
+    /* Câu chúc */
+    .message {
+      position: absolute;
+      font-size: 26px;
+      font-weight: bold;
+      color: #fff8a6;
+      text-shadow: 0 0 5px #fff,0 0 10px #ffd700,0 0 15px #ffea00;
+      z-index: 2;
+      animation: floatMsg linear forwards;
+    }
+    @keyframes floatMsg {0%{transform:translateY(90vh);opacity:1;}100%{transform:translateY(-120vh);opacity:0;}}
+  </style>
+</head>
+<body>
+  <div id="moon"></div>
+  <audio id="bgMusic" loop>
+    <source src="https://NoobCoder3172.github.io/TrungThu/ThangCuoi.mp3" type="audio/mpeg">
+  </audio>
+  <button id="playBtn">🌕 Nhấn vô đây nè 🌸</button>
+
+<script>
+  // Tạo sao
+  for(let i=0;i<50;i++){
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.left = Math.random()*window.innerWidth + "px";
+    star.style.top = Math.random()*window.innerHeight/2 + "px";
+    const size = Math.random()*3+2;
+    star.style.width = size+"px";
+    star.style.height = size+"px";
+    document.body.appendChild(star);
+  }
+
+  const messages=[
+    "🎑 Chúc em luôn may mắn, mọi điều tốt đẹp đến bên em.",
+    "💖 Mong em cười nhiều hơn, vui vẻ hơn và hạnh phúc mỗi ngày nhenn.",
+    "😂 Suốt ngày dọa block với bai thôi :))) May anh mặt dày hơn trăng rằm.",
+    "🌸 Trung Thu này ăn bánh ngon nha, đừng quên nghỉ ngơi và vui vẻ nhé!",
+    "🌙 Lúc nào cũng thức tới 3-4h sáng, khổ quá, biết là dl dí nhưng được thì nghỉ sớm chút nhoaa.",
+    "✨ Chúc mọi điều tốt đẹp đều đến với em.",
+    "🌸 Nhớ mặc ấm khi đi ra ngoài nhó, đông đến cũng lạnh lắm đấy.",
+    "🍜 Suốt ngày ăn cháo với mì tôm cay vl :)) Ăn gì cứ nhắn anh là được mà nha.",
+    "🍪 Kẹo trung thu ngon hemm? Ăn xong nhớ nhắn khen anh nhé!",
+    "🌕 Trăng đẹp vl, mong em lúc nào cũng như ánh trăng vậy.",
+    "💛 Dù xa nhưng anh vẫn muốn gửi em 1 tỉ lời chúc ấm áp :))",
+    "💖 Xinh gái quá trài ơi, nhìn là muốn ... luôn á :))",
+    "🌟 Mong đêm nay em ngủ ngon, mơ những điều đẹp nhất.",
+    "🙏 Cảm ơn em nhiều nha, mọi điều em làm cho anh đều quý lắm.",
+    "🌸 Chúc em Trung Thu vui vẻ, ăn nhiều bánh và nhận thật nhiều yêu thương.",
+    "🌸 Hết ời á :)) mún nghe chúc lại thì cứ xem típ nhóoooo."
+  ];
+
+  const images=[
+    "anh1.jpg","anh2.jpg","anh3.jpg","anh4.jpg","anh5.jpg","anh6.jpg","anh7.jpg","anh8.jpg","anh9.jpg","anh10.jpg",
+    "anh11.jpg","anh12.jpg","anh13.jpg","anh14.jpg","anh15.jpg","anh16.jpg","anh17.jpg","anh18.jpg","anh19.jpg"
+  ];
+
+  let imgIndex=0,msgIndex=0;
+
+  function spawnNextImage(){
+    const img=document.createElement("img");
+    img.src=images[imgIndex];
+    img.className="floating-img";
+    document.body.appendChild(img);
+    img.style.left=Math.random()*(window.innerWidth-100)+"px";
+    img.style.width=(Math.random()*40+60)+"px";
+    img.style.animationDuration="20s";
+    setTimeout(()=>img.remove(),20000);
+
+    imgIndex++; if(imgIndex>=images.length) imgIndex=0;
+    setTimeout(spawnNextImage,4000);
+  }
+
+  function spawnNextMessage(){
+    const msg=document.createElement("div");
+    msg.className="message";
+    msg.textContent=messages[msgIndex];
+    document.body.appendChild(msg);
+    msg.style.left=Math.random()*(window.innerWidth-300)+"px";
+    msg.style.animationDuration="22s";
+    setTimeout(()=>msg.remove(),22000);
+
+    msgIndex++; if(msgIndex>=messages.length) msgIndex=0;
+    setTimeout(spawnNextMessage,6000);
+  }
+
+  function createHeart(){
+    const heart=document.createElement("div");
+    heart.className="heart";
+    document.body.appendChild(heart);
+    heart.style.left=Math.random()*window.innerWidth+"px";
+    heart.style.top=Math.random()*window.innerHeight+"px";
+    const size=Math.random()*20+15;
+    heart.style.width=size+"px";
+    heart.style.height=size+"px";
+    heart.style.animationDuration=(Math.random()*4+5)+"s";
+    setTimeout(()=>heart.remove(),10000);
+  }
+
+  document.getElementById("playBtn").addEventListener("click",()=>{
+    const music=document.getElementById("bgMusic");
+    music.play().then(()=>{
+      document.getElementById("playBtn").style.display="none";
+      spawnNextImage();
+      spawnNextMessage();
+      setInterval(createHeart,800); // trái tim bay liên tục
+    }).catch(e=>console.log("Không phát được nhạc:",e));
+  });
+</script>
+</body>
+</html>
